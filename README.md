@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/rodrigodosanjosoliveira/SftpWrapper.svg?branch=develop)](https://travis-ci.org/rodrigodosanjosoliveira/SftpWrapper)
+[![Build Status](https://travis-ci.org/rodrigodosanjosoliveira/SftpWrapper.svg?branch=master)](https://travis-ci.org/rodrigodosanjosoliveira/SftpWrapper)
 
 # SftpWrapper #
 Pacote NuGet responsável por realizar operações de download e upload de arquivos utilizando servidores SFTP
