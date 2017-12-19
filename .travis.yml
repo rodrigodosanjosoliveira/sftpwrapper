@@ -1,2 +1,4 @@
 language: csharp
 solution: SftpWrapper.sln
+install:
+  - nuget restore SftpWrapper.sln
