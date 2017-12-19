@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Rodrigo Oliveira</Authors>
+    <Company>Rodrigo Oliveira</Company>
+    <Product>SftpWrapper</Product>
+    <Description>Wrapper para utilização do SFTP do pacote SSH.NET</Description>
+    <PackageProjectUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
