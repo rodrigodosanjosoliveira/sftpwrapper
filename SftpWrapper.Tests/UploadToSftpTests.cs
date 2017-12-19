@@ -8,14 +8,16 @@ namespace SftpWrapper.Tests
 {
     public class UploadToSftpTests
     {
-        const string Host = "localhost";
-        const string User = "foo";
-        const string Password = "pass";
-        const string DestinationPath = "/upload/";
-        readonly string _sourcePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), 
+        private const string Host = "localhost";
+        private const string User = "foo";
+        private const string Password = "pass";
+        private const string DestinationPath = "/upload/";
+
+        private readonly string _sourcePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "filename.ext");
-        const int Port = 2222;
-        readonly ConnectionInfo _connection;
+
+        private const int Port = 2222;
+        private readonly ConnectionInfo _connection;
 
         public UploadToSftpTests()
         {
@@ -33,7 +35,7 @@ namespace SftpWrapper.Tests
         [Fact]
         public void UploadTestWithInvalidArgument()
         {
-            var invalidPath = "path";
+            const string invalidPath = "path";
             var ex = Assert.Throws<ArgumentException>(() => new Upload(_connection, invalidPath, DestinationPath));
             Assert.Equal("Invalid path or file not found.", ex.Message);
         }

@@ -8,9 +8,9 @@ namespace SftpWrapper.Sdk.Services
 {
     public class Download : IDisposable
     {
-        readonly SftpClient _client;
-        public bool DownloadSuccess {get; set;}
-        protected SftpFile File {get; set;}
+        private readonly SftpClient _client;
+        public bool DownloadSuccess { get; set; }
+        protected SftpFile File { get; set; }
 
         public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath)
         {
@@ -19,14 +19,14 @@ namespace SftpWrapper.Sdk.Services
             File = new SftpFile(Valid(sourcePath), destinationPath);
         }
 
-        string Valid(string sourcePath)
+        private string Valid(string sourcePath)
         {
-            if(_client.Exists(sourcePath))
+            if (_client.Exists(sourcePath))
                 return sourcePath;
-            
+
             throw new SftpPathNotFoundException("File not found.");
         }
-        
+
         #region Private Methods
 
         private void DeleteSourceFolder()
@@ -54,15 +54,10 @@ namespace SftpWrapper.Sdk.Services
                 throw new ObjectDisposedException(ode.ObjectName, ode.InnerException);
             }
         }
-        
-        void Connect()
-        {
-            _client.Connect();
-        }
 
-        void Disconnect()
+        private void Disconnect()
         {
-            if(_client != null && _client.IsConnected)
+            if (_client != null && _client.IsConnected)
                 _client.Disconnect();
         }
 
@@ -72,12 +67,12 @@ namespace SftpWrapper.Sdk.Services
         {
             try
             {
-                using(var fs = System.IO.File.OpenWrite(File.DestinationPath))
+                using (var fs = System.IO.File.OpenWrite(File.DestinationPath))
                 {
                     _client.DownloadFile(File.SourcePath, fs);
                 }
                 DownloadSuccess = System.IO.File.Exists($"{File.DestinationPath}");
-                if(DownloadSuccess)
+                if (DownloadSuccess)
                     DeleteSourceFolder();
             }
             catch (InvalidOperationException ioe)
