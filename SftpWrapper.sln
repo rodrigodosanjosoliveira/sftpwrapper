@@ -1,0 +1,31 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B0CD47C4-3975-4034-8F6D-CF348CDC5A7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpWrapper.Sdk", "SftpWrapper.Sdk\SftpWrapper.Sdk.csproj", "{D8931DBE-E326-4955-B8B1-42D14AEBBD36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E4FA5885-50A4-4990-B22F-893D9E19443B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpWrapper.Tests", "SftpWrapper.Tests\SftpWrapper.Tests.csproj", "{91D0508F-7E75-4537-A425-52BC67A64F8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8931DBE-E326-4955-B8B1-42D14AEBBD36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8931DBE-E326-4955-B8B1-42D14AEBBD36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8931DBE-E326-4955-B8B1-42D14AEBBD36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8931DBE-E326-4955-B8B1-42D14AEBBD36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D0508F-7E75-4537-A425-52BC67A64F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D0508F-7E75-4537-A425-52BC67A64F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D0508F-7E75-4537-A425-52BC67A64F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D0508F-7E75-4537-A425-52BC67A64F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D8931DBE-E326-4955-B8B1-42D14AEBBD36} = {B0CD47C4-3975-4034-8F6D-CF348CDC5A7B}
+		{91D0508F-7E75-4537-A425-52BC67A64F8E} = {E4FA5885-50A4-4990-B22F-893D9E19443B}
+	EndGlobalSection
+EndGlobal
