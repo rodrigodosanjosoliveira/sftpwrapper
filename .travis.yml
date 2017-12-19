@@ -1,7 +1,7 @@
 language: csharp
 solution: SftpWrapper.sln
 dist: trusty
-dotnet: 1.1.5
+dotnet: 2.0.0
 mono: none
 env:
   global:
