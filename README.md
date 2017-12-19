@@ -3,12 +3,15 @@
 
 # SftpWrapper #
 Pacote NuGet responsável por realizar operações de download e upload de arquivos utilizando servidores SFTP
+https://www.nuget.org/packages/SftpWrapper.Sdk/
 
 ## Utilizando o nuget
 
 Configurar o Visual Studio para adicionar a origem desse nuget:
 ```
 Tools-> NuGet Package Manager -> Package Manager Settings -> Package Sources
+
+Install-Package SftpWrapper.Sdk -Version 1.0.1
 ```
 ## Executando os testes 
 
