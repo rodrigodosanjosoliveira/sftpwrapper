@@ -15,7 +15,7 @@ Install-Package SftpWrapper.Sdk -Version 1.0.1
 ```
 ## Executando os testes 
 
-Dentro do diretório do projeto de testes, deve-se executar o comando abaixo para iniciar o servidor SFTP a partir da imagem Docker.
+Deve-se executar o comando abaixo para iniciar o servidor SFTP a partir da imagem Docker.
 
 ``` docker-compose up -d ```
 
