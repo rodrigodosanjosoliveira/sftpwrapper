@@ -9,7 +9,7 @@ namespace SftpWrapper.Sdk.Services
 {
     public class Upload : IDisposable
     {
-        readonly SftpClient _client;
+        private readonly SftpClient _client;
         public bool UploadSuccess { get; set; }
         protected SftpFile File { get; set; }
 
@@ -54,24 +54,24 @@ namespace SftpWrapper.Sdk.Services
 
         #region Private Methods
 
-        void Connect()
+        private void Connect()
         {
             _client.Connect();
         }
 
-        void Disconnect()
+        private void Disconnect()
         {
             _client.Disconnect();
         }
 
-        string Valid(string sourcePath)
+        private static string Valid(string sourcePath)
         {
             if (System.IO.File.Exists(sourcePath))
                 return sourcePath;
             throw new ArgumentException("Invalid path or file not found.");
         }
 
-        void DeleteSourceFolder()
+        private void DeleteSourceFolder()
         {
             if (!UploadSuccess) return;
             if (System.IO.File.Exists(File.SourcePath))

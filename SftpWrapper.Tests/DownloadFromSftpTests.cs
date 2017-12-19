@@ -15,7 +15,7 @@ namespace SftpWrapper.Tests
         private const string SourcePath = "/upload/filename.ext";
         private readonly string _destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "filename.ext");
         private const int Port = 2222;
-        readonly ConnectionInfo _connection;
+        private readonly ConnectionInfo _connection;
 
         public DownloadFromSftpTests()
         {
@@ -33,9 +33,9 @@ namespace SftpWrapper.Tests
         [Fact]
         public void UploadTestWithInvalidArgument()
         {
-            var invalidPath = "path";
+            const string invalidPath = "path";
             var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, invalidPath, _destinationPath));
-            Assert.Equal(expected: "File not found.", actual: ex.Message);
+            Assert.Equal("File not found.", ex.Message);
         }
     }
 }
