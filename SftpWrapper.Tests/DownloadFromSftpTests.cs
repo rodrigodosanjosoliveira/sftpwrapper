@@ -46,5 +46,13 @@ namespace SftpWrapper.Tests
             Assert.NotNull(file);
             Assert.Equal("teste.html", file);
         }
+
+        [Fact]
+        public void GetFileNameIsNullTest()
+        {
+            var download = new Download(_connection, "/upload/", _destinationPath);
+            var file = download.GetFileName();
+            Assert.Null(file);
+        }
     }
 }

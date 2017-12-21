@@ -100,8 +100,8 @@ namespace SftpWrapper.Sdk.Services
             {
                 var files = _client.ListDirectory(File.SourcePath);
                 var sftpFiles = files.ToList();
-                var l = sftpFiles.First(sf => !sf.Name.StartsWith("."));
-                return l.Name;
+                var l = sftpFiles.FirstOrDefault(sf => !sf.Name.StartsWith("."));
+                return l?.Name;
             }
             catch(ArgumentNullException ane)
             {
