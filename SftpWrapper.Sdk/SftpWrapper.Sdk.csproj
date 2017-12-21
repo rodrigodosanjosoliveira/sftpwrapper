@@ -10,11 +10,12 @@
     <PackageProjectUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</RepositoryUrl>
     <NeutralLanguage></NeutralLanguage>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <AssemblyVersion>1.0.0.2</AssemblyVersion>
     <FileVersion>1.0.0.2</FileVersion>
-    <PackageReleaseNotes>Method to verify if file exists in remote directory
-Update .gitignore</PackageReleaseNotes>
+    <PackageReleaseNotes>Method to verify if file exists in remote directory</PackageReleaseNotes>
+    <PackageLicenseUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageLicenseUrl>
+    <Copyright>Copyright © 2017 Rodrigo Oliveira</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
