@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using Renci.SshNet;
@@ -12,13 +11,13 @@ namespace SftpWrapper.Sdk.Services
     {
         private readonly SftpClient _client;
         public bool DownloadSuccess { get; set; }
-        protected SftpFile File { get; set; }
+        protected SftpFileInfo File { get; set; }
 
         public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath)
         {
             _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
             _client.Connect();
-            File = new SftpFile(Valid(sourcePath), destinationPath);
+            File = new SftpFileInfo(Valid(sourcePath), destinationPath);
         }
 
         private string Valid(string sourcePath)
@@ -95,16 +94,14 @@ namespace SftpWrapper.Sdk.Services
             }
         }
 
-        public IEnumerable<string> ListFiles()
+        public string GetFileName()
         {
-            IEnumerable<Renci.SshNet.Sftp.SftpFile> files = new List<Renci.SshNet.Sftp.SftpFile>();
-            try 
+            try
             {
-                files = _client.ListDirectory(File.SourcePath);
-                if(files.Any())
-                    return files.Select(f => f.Name);
-                else
-                    return null;
+                var files = _client.ListDirectory(File.SourcePath);
+                var sftpFiles = files.ToList();
+                var l = sftpFiles.First(sf => !sf.Name.StartsWith("."));
+                return l.Name;
             }
             catch(ArgumentNullException ane)
             {
