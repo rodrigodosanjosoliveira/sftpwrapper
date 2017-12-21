@@ -42,3 +42,7 @@ Thumbs.db
 *.lock
 
 *.ide
+
+*.ide-shm
+
+*.ide-wal
