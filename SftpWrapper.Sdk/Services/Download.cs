@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using Renci.SshNet;
 using Renci.SshNet.Common;
@@ -90,6 +92,39 @@ namespace SftpWrapper.Sdk.Services
             catch (SshAuthenticationException sae)
             {
                 throw new SshAuthenticationException(sae.Message, sae.InnerException);
+            }
+        }
+
+        public IEnumerable<string> ListFiles()
+        {
+            IEnumerable<Renci.SshNet.Sftp.SftpFile> files = new List<Renci.SshNet.Sftp.SftpFile>();
+            try 
+            {
+                files = _client.ListDirectory(File.SourcePath);
+                if(files.Any())
+                    return files.Select(f => f.Name);
+                else
+                    return null;
+            }
+            catch(ArgumentNullException ane)
+            {
+                throw new ArgumentNullException(ane.ParamName, ane.Message);
+            }
+            catch(SshConnectionException sce)
+            {
+                throw new SshConnectionException(sce.Message, sce.DisconnectReason);
+            }
+            catch(SftpPermissionDeniedException spde)
+            {
+                throw new SftpPermissionDeniedException(spde.Message, spde.InnerException);
+            }
+            catch(SshException se)
+            {
+                throw new SshException(se.Message, se.InnerException);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
