@@ -11,14 +11,14 @@ namespace SftpWrapper.Sdk.Services
     {
         private readonly SftpClient _client;
         public bool UploadSuccess { get; set; }
-        protected SftpFile File { get; set; }
+        protected SftpFileInfo File { get; set; }
 
         public Upload(Models.ConnectionInfo info, string sourcePath,
                      string destinationPath)
         {
             _client = new SftpClient(info.Host, info.Port, info.UserName,
                                      info.Password);
-            File = new SftpFile(Valid(sourcePath), destinationPath);
+            File = new SftpFileInfo(Valid(sourcePath), destinationPath);
         }
 
         public void UploadToSftp()
@@ -33,6 +33,7 @@ namespace SftpWrapper.Sdk.Services
                     _client.UploadFile(fs, File.Name);
                 }
                 UploadSuccess = _client.Exists($"{File.DestinationPath}{File.Name}");
+                DeleteSourceFolder();
             }
             catch (InvalidOperationException ioe)
             {
@@ -84,7 +85,6 @@ namespace SftpWrapper.Sdk.Services
 
         protected virtual void Dispose(bool disposing)
         {
-            DeleteSourceFolder();
             Disconnect();
             if (!disposing) return;
             _client?.Dispose();
