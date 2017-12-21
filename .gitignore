@@ -38,3 +38,11 @@ Thumbs.db
 
 # dotCover
 *.dotCover
+
+*.lock
+
+*.ide
+
+*.ide-shm
+
+*.ide-wal

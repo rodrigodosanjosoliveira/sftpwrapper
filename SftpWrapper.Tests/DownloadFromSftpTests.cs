@@ -31,11 +31,20 @@ namespace SftpWrapper.Tests
         }
 
         [Fact]
-        public void UploadTestWithInvalidArgument()
+        public void DownloadTestWithInvalidArgument()
         {
             const string invalidPath = "path";
             var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, invalidPath, _destinationPath));
             Assert.Equal("File not found.", ex.Message);
+        }
+
+        [Fact]
+        public void GetFileNameTest()
+        {
+            var download = new Download(_connection, "/upload/", _destinationPath);
+            var file = download.GetFileName();
+            Assert.NotNull(file);
+            Assert.Equal("teste.html", file);
         }
     }
 }
