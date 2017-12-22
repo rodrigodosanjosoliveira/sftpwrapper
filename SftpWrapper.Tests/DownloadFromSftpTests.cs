@@ -54,5 +54,13 @@ namespace SftpWrapper.Tests
             var file = download.GetFileName();
             Assert.Null(file);
         }
+
+        [Fact]
+        public void UsingOtherConstructorTest()
+        {
+            var download = new Download(_connection) {File = new SftpFileInfo("/upload/teste.html",_destinationPath)};
+            download.DownloadFromSftp();
+            Assert.True(download.DownloadSuccess);
+        }
     }
 }
