@@ -11,7 +11,13 @@ namespace SftpWrapper.Sdk.Services
     {
         private readonly SftpClient _client;
         public bool DownloadSuccess { get; set; }
-        protected SftpFileInfo File { get; set; }
+        public SftpFileInfo File { get; set; }
+
+        public Download(Models.ConnectionInfo info)
+        {
+            _client = new SftpClient(info.Host,info.Port,info.UserName,info.Password);
+            _client.Connect();
+        }
 
         public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath)
         {
@@ -101,6 +107,7 @@ namespace SftpWrapper.Sdk.Services
                 var files = _client.ListDirectory(File.SourcePath);
                 var sftpFiles = files.ToList();
                 var l = sftpFiles.FirstOrDefault(sf => !sf.Name.StartsWith("."));
+
                 return l?.Name;
             }
             catch(ArgumentNullException ane)
