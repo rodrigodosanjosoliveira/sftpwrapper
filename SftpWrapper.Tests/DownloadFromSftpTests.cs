@@ -13,7 +13,7 @@ namespace SftpWrapper.Tests
         private const string User = "foo";
         private const string Password = "pass";
         private const string SourcePath = "/upload/";
-        private readonly string _destinationPath = @"C:\Users\raoliveira.STONE\Documents\";
+        private readonly string _destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         private const int Port = 2222;
         private readonly ConnectionInfo _connection;
 
