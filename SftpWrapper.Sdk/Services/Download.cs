@@ -23,15 +23,19 @@ namespace SftpWrapper.Sdk.Services
         {
             _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
             _client.Connect();
-            File = new SftpFileInfo(Valid(sourcePath), destinationPath);
+            
+            File = new SftpFileInfo(ValidPath(sourcePath, ref destinationPath), destinationPath);
         }
 
-        private string Valid(string sourcePath)
+        private string ValidPath(string sourcePath, ref string destinationPath)
         {
-            if (_client.Exists(sourcePath))
-                return sourcePath;
+            var files = _client.ListDirectory(sourcePath).Where(f => !f.Name.StartsWith(".")).ToList();
+            if (!files.Any()) throw new SftpPathNotFoundException("File not found.");
+            if (!_client.Exists(string.Concat(sourcePath, files.First().Name)))
+                throw new SftpPathNotFoundException("File not found.");
+            destinationPath = string.Concat(destinationPath, files.First().Name);
+            return string.Concat(sourcePath, files.First().Name);
 
-            throw new SftpPathNotFoundException("File not found.");
         }
 
         #region Private Methods
