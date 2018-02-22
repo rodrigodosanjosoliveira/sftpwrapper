@@ -15,7 +15,7 @@ namespace SftpWrapper.Sdk.Services
 
         public Download(Models.ConnectionInfo info)
         {
-            _client = new SftpClient(info.Host,info.Port,info.UserName,info.Password);
+            _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
             _client.Connect();
         }
 
@@ -23,7 +23,7 @@ namespace SftpWrapper.Sdk.Services
         {
             _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
             _client.Connect();
-            
+
             File = new SftpFileInfo(ValidPath(sourcePath, ref destinationPath), destinationPath);
         }
 
@@ -37,6 +37,7 @@ namespace SftpWrapper.Sdk.Services
             return string.Concat(sourcePath, files.First().Name);
 
         }
+
 
         #region Private Methods
 
@@ -74,6 +75,8 @@ namespace SftpWrapper.Sdk.Services
 
         #endregion
 
+        #region Public Methods
+
         public void DownloadFromSftp()
         {
             try
@@ -82,6 +85,7 @@ namespace SftpWrapper.Sdk.Services
                 {
                     _client.DownloadFile(File.SourcePath, fs);
                 }
+
                 DownloadSuccess = System.IO.File.Exists($"{File.DestinationPath}");
                 if (DownloadSuccess)
                     DeleteSourceFolder();
@@ -102,6 +106,10 @@ namespace SftpWrapper.Sdk.Services
             {
                 throw new SshAuthenticationException(sae.Message, sae.InnerException);
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message)
+            }
         }
 
         public string GetFileName()
@@ -114,27 +122,29 @@ namespace SftpWrapper.Sdk.Services
 
                 return l?.Name;
             }
-            catch(ArgumentNullException ane)
+            catch (ArgumentNullException ane)
             {
                 throw new ArgumentNullException(ane.ParamName, ane.Message);
             }
-            catch(SshConnectionException sce)
+            catch (SshConnectionException sce)
             {
                 throw new SshConnectionException(sce.Message, sce.DisconnectReason);
             }
-            catch(SftpPermissionDeniedException spde)
+            catch (SftpPermissionDeniedException spde)
             {
                 throw new SftpPermissionDeniedException(spde.Message, spde.InnerException);
             }
-            catch(SshException se)
+            catch (SshException se)
             {
                 throw new SshException(se.Message, se.InnerException);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
+
+        #endregion
 
         #region IDisposable Members
 
