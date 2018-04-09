@@ -64,32 +64,6 @@ namespace SftpWrapper.Sdk.Services
 
         #region Private Methods
 
-        private void DeleteSourceFolder()
-        {
-            if (!DownloadSuccess) return;
-            if (!_client.Exists(File.SourcePath)) return;
-            try
-            {
-                _client.Delete(File.SourcePath);
-            }
-            catch (ArgumentNullException ane)
-            {
-                throw new ArgumentNullException(ane.ParamName, ane.InnerException);
-            }
-            catch (SshConnectionException sce)
-            {
-                throw new SshConnectionException(sce.Message, sce.DisconnectReason, sce.InnerException);
-            }
-            catch (SftpPathNotFoundException spnfe)
-            {
-                throw new SftpPathNotFoundException(spnfe.Message, spnfe.InnerException);
-            }
-            catch (ObjectDisposedException ode)
-            {
-                throw new ObjectDisposedException(ode.ObjectName, ode.InnerException);
-            }
-        }
-
         private void DeleteSourceFolder(SftpFileInfo file)
         {
             if (!DownloadSuccess) return;
@@ -137,7 +111,7 @@ namespace SftpWrapper.Sdk.Services
 
                 DownloadSuccess = System.IO.File.Exists($"{File.DestinationPath}");
                 if (DownloadSuccess)
-                    DeleteSourceFolder();
+                    DeleteSourceFolder(File);
             }
             catch (InvalidOperationException ioe)
             {
