@@ -11,8 +11,8 @@ namespace SftpWrapper.Sdk.Models
         public string SourcePath { get; }
         public string DestinationPath { get; }
 
-        /// <summary>
-        /// Initialize a new instance of the <see="SftpClient"/> class.
+        /// <summary see="">
+        /// Initialize a new instance of the  class.
         /// </summary>
         /// <param name="sourcePath">Source path of the file</param>
         /// <param name="destinationPath">Destination path of the file.</param>
@@ -25,7 +25,7 @@ namespace SftpWrapper.Sdk.Models
         }
 
         /// <summary>
-        /// 
+        /// Return file name.
         /// </summary>
         public string Name => Path.GetFileName(SourcePath);
     }
