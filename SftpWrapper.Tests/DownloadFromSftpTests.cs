@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Renci.SshNet.Common;
 using SftpWrapper.Sdk.Models;
@@ -31,17 +32,37 @@ namespace SftpWrapper.Tests
         }
 
         [Fact]
+        public void DownloadWithExtensionTest()
+        {
+            var validExtensions = new List<string> {".rem", ".ret"};
+
+            var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
+            operation.DownloadManyFromSftp();
+            Assert.True(operation.DownloadSuccess);
+        }
+
+        [Fact]
+        public void DownloadWithExtensionNoValidFilesTest()
+        {
+            var validExtensions = new List<string> { ".rem", ".ret" };
+
+            var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
+            var ex = Assert.Throws<SftpPathNotFoundException>(() => operation.DownloadManyFromSftp());
+            Assert.Equal("No files found to download.", ex.Message);
+        }
+
+        [Fact]
         public void DownloadTestWithInvalidArgument()
         {
             const string invalidPath = "path";
             var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, invalidPath, _destinationPath));
-            Assert.Equal("File not found.", ex.Message);
+            Assert.Equal("No such file", ex.Message);
         }
 
         [Fact]
         public void GetFileNameTest()
         {
-            var download = new Download(_connection, "/upload/", _destinationPath);
+            var download = new Download(_connection, SourcePath, _destinationPath);
             var file = download.GetFileName();
             Assert.NotNull(file);
             Assert.Equal("teste.html", file);
@@ -50,9 +71,8 @@ namespace SftpWrapper.Tests
         [Fact]
         public void GetFileNameIsNullTest()
         {
-            var download = new Download(_connection, "/upload/", _destinationPath);
-            var file = download.GetFileName();
-            Assert.Null(file);
+            var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, SourcePath, _destinationPath));
+            Assert.Equal("File not found.", ex.Message);
         }
 
         [Fact]
