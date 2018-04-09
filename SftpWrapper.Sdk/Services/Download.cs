@@ -54,10 +54,10 @@ namespace SftpWrapper.Sdk.Services
         {
             var files = _client.ListDirectory(sourcePath).Where(f => !f.Name.StartsWith(".")).ToList();
             if (!files.Any()) throw new SftpPathNotFoundException("File not found.");
-            if (!_client.Exists(string.Concat(sourcePath, files.First().Name)))
+            if (!_client.Exists(Path.Combine(sourcePath, files.First().Name)))
                 throw new SftpPathNotFoundException("File not found.");
-            destinationPath = string.Concat(destinationPath, files.First().Name);
-            return string.Concat(sourcePath, files.First().Name);
+            destinationPath = Path.Combine(destinationPath, files.First().Name);
+            return Path.Combine(sourcePath, files.First().Name);
 
         }
 
