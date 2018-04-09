@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using Renci.SshNet.Sftp;
 using SftpWrapper.Sdk.Models;
 
 namespace SftpWrapper.Sdk.Services
@@ -12,6 +15,7 @@ namespace SftpWrapper.Sdk.Services
         private readonly SftpClient _client;
         public bool DownloadSuccess { get; set; }
         public SftpFileInfo File { get; set; }
+        public List<SftpFileInfo> Files { get; set; }
 
         public Download(Models.ConnectionInfo info)
         {
@@ -25,6 +29,25 @@ namespace SftpWrapper.Sdk.Services
             _client.Connect();
 
             File = new SftpFileInfo(ValidPath(sourcePath, ref destinationPath), destinationPath);
+        }
+
+        public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath, List<string> validExtensions)
+        {
+            Files = new List<SftpFileInfo>();
+            _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
+            _client.Connect();
+            List<SftpFile> allFiles = _client.ListDirectory(sourcePath).ToList().OrderByDescending(f => f.LastWriteTime).ToList();
+            var filePaths = new List<string>();
+
+            foreach (var extension in validExtensions)
+            {
+                filePaths.AddRange(allFiles.Where(f => f.Name.EndsWith(extension)).Select(f => f.FullName).ToList());
+            }
+
+            foreach (var filePath in filePaths)
+            {
+                Files.Add(new SftpFileInfo(filePath, Path.Combine(destinationPath, Path.GetFileName(filePath))));
+            }
         }
 
         private string ValidPath(string sourcePath, ref string destinationPath)
@@ -48,6 +71,32 @@ namespace SftpWrapper.Sdk.Services
             try
             {
                 _client.Delete(File.SourcePath);
+            }
+            catch (ArgumentNullException ane)
+            {
+                throw new ArgumentNullException(ane.ParamName, ane.InnerException);
+            }
+            catch (SshConnectionException sce)
+            {
+                throw new SshConnectionException(sce.Message, sce.DisconnectReason, sce.InnerException);
+            }
+            catch (SftpPathNotFoundException spnfe)
+            {
+                throw new SftpPathNotFoundException(spnfe.Message, spnfe.InnerException);
+            }
+            catch (ObjectDisposedException ode)
+            {
+                throw new ObjectDisposedException(ode.ObjectName, ode.InnerException);
+            }
+        }
+
+        private void DeleteSourceFolder(SftpFileInfo file)
+        {
+            if (!DownloadSuccess) return;
+            if (!_client.Exists(file.SourcePath)) return;
+            try
+            {
+                _client.Delete(file.SourcePath);
             }
             catch (ArgumentNullException ane)
             {
@@ -109,6 +158,48 @@ namespace SftpWrapper.Sdk.Services
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public void DownloadManyFromSftp()
+        {
+            try
+            {
+                if (!Files.Any())
+                    throw new ApplicationException("No files found to download.");
+
+                foreach (var file in Files)
+                {
+                    using (var fs = System.IO.File.OpenWrite(file.DestinationPath))
+                    {
+                        _client.DownloadFile(file.SourcePath, fs);
+                    }
+
+                    DownloadSuccess = System.IO.File.Exists($"{file.DestinationPath}");
+                    if (DownloadSuccess)
+                        DeleteSourceFolder(file);
+                }
+
+            }
+            catch (InvalidOperationException ioe)
+            {
+                throw new InvalidOperationException(ioe.Message, ioe.InnerException);
+            }
+            catch (SocketException se)
+            {
+                throw new SocketException(se.ErrorCode);
+            }
+            catch (SshConnectionException sce)
+            {
+                throw new SshConnectionException(sce.Message);
+            }
+            catch (SshAuthenticationException sae)
+            {
+                throw new SshAuthenticationException(sae.Message, sae.InnerException);
+            }
+            catch (ApplicationException ape)
+            {
+                throw new ApplicationException(ape.Message);
             }
         }
 

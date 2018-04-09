@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Renci.SshNet.Common;
 using SftpWrapper.Sdk.Models;
@@ -28,6 +29,26 @@ namespace SftpWrapper.Tests
             var operation = new Download(_connection, SourcePath, _destinationPath);
             operation.DownloadFromSftp();
             Assert.True(operation.DownloadSuccess);
+        }
+
+        [Fact]
+        public void DownloadWithExtensionTest()
+        {
+            var validExtensions = new List<string> {".rem", ".ret"};
+
+            var operation = new Download(_connection, "/upload/inbox/", _destinationPath, validExtensions);
+            operation.DownloadManyFromSftp();
+            Assert.True(operation.DownloadSuccess);
+        }
+
+        [Fact]
+        public void DownloadWithExtensionNoValidFilesTest()
+        {
+            var validExtensions = new List<string> { ".rem", ".ret" };
+
+            var operation = new Download(_connection, "/upload/inbox/", _destinationPath, validExtensions);
+            var ex = Assert.Throws<ApplicationException>(() => operation.DownloadManyFromSftp());
+            Assert.Equal("No files found to download.", ex.Message);
         }
 
         [Fact]
