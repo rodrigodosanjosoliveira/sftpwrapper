@@ -59,7 +59,6 @@ namespace SftpWrapper.Sdk.Services
                 {
                     _client.DownloadFile(File.SourcePath, fs);
                 }
-
                 DownloadSuccess = System.IO.File.Exists($"{File.DestinationPath}");
                 if (DownloadSuccess)
                     DeleteSourceFolder(File);
@@ -79,10 +78,6 @@ namespace SftpWrapper.Sdk.Services
             catch (SshAuthenticationException sae)
             {
                 throw new SshAuthenticationException(sae.Message, sae.InnerException);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
             }
         }
 
