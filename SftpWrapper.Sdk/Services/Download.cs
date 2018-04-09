@@ -132,7 +132,7 @@ namespace SftpWrapper.Sdk.Services
             try
             {
                 if (!Files.Any())
-                    throw new ApplicationException("No files found to download.");
+                    throw new SftpPathNotFoundException("No files found to download.");
 
                 foreach (var file in Files)
                 {

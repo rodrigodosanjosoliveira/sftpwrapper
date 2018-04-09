@@ -36,7 +36,7 @@ namespace SftpWrapper.Tests
         {
             var validExtensions = new List<string> {".rem", ".ret"};
 
-            var operation = new Download(_connection, "/upload/inbox/", _destinationPath, validExtensions);
+            var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
             operation.DownloadManyFromSftp();
             Assert.True(operation.DownloadSuccess);
         }
@@ -46,8 +46,8 @@ namespace SftpWrapper.Tests
         {
             var validExtensions = new List<string> { ".rem", ".ret" };
 
-            var operation = new Download(_connection, "/upload/inbox/", _destinationPath, validExtensions);
-            var ex = Assert.Throws<ApplicationException>(() => operation.DownloadManyFromSftp());
+            var operation = new Download(_connection, "/upload/", _destinationPath, validExtensions);
+            var ex = Assert.Throws<SftpPathNotFoundException>(() => operation.DownloadManyFromSftp());
             Assert.Equal("No files found to download.", ex.Message);
         }
 
