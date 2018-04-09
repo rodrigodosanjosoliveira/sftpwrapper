@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Sockets;
 using Renci.SshNet;
 using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 using SftpWrapper.Sdk.Models;
 
 namespace SftpWrapper.Sdk.Services
@@ -16,6 +15,8 @@ namespace SftpWrapper.Sdk.Services
         public bool DownloadSuccess { get; set; }
         public SftpFileInfo File { get; set; }
         public List<SftpFileInfo> Files { get; set; }
+
+        #region Public Methods
 
         public Download(Models.ConnectionInfo info)
         {
@@ -31,12 +32,12 @@ namespace SftpWrapper.Sdk.Services
             File = new SftpFileInfo(ValidPath(sourcePath, ref destinationPath), destinationPath);
         }
 
-        public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath, List<string> validExtensions)
+        public Download(Models.ConnectionInfo info, string sourcePath, string destinationPath, IEnumerable<string> validExtensions)
         {
             Files = new List<SftpFileInfo>();
             _client = new SftpClient(info.Host, info.Port, info.UserName, info.Password);
             _client.Connect();
-            List<SftpFile> allFiles = _client.ListDirectory(sourcePath).ToList().OrderByDescending(f => f.LastWriteTime).ToList();
+            var allFiles = _client.ListDirectory(sourcePath).ToList().OrderByDescending(f => f.LastWriteTime).ToList();
             var filePaths = new List<string>();
 
             foreach (var extension in validExtensions)
@@ -49,56 +50,6 @@ namespace SftpWrapper.Sdk.Services
                 Files.Add(new SftpFileInfo(filePath, Path.Combine(destinationPath, Path.GetFileName(filePath))));
             }
         }
-
-        private string ValidPath(string sourcePath, ref string destinationPath)
-        {
-            var files = _client.ListDirectory(sourcePath).Where(f => !f.Name.StartsWith(".")).ToList();
-            if (!files.Any()) throw new SftpPathNotFoundException("File not found.");
-            if (!_client.Exists(Path.Combine(sourcePath, files.First().Name)))
-                throw new SftpPathNotFoundException("File not found.");
-            destinationPath = Path.Combine(destinationPath, files.First().Name);
-            return Path.Combine(sourcePath, files.First().Name);
-
-        }
-
-
-        #region Private Methods
-
-        private void DeleteSourceFolder(SftpFileInfo file)
-        {
-            if (!DownloadSuccess) return;
-            if (!_client.Exists(file.SourcePath)) return;
-            try
-            {
-                _client.Delete(file.SourcePath);
-            }
-            catch (ArgumentNullException ane)
-            {
-                throw new ArgumentNullException(ane.ParamName, ane.InnerException);
-            }
-            catch (SshConnectionException sce)
-            {
-                throw new SshConnectionException(sce.Message, sce.DisconnectReason, sce.InnerException);
-            }
-            catch (SftpPathNotFoundException spnfe)
-            {
-                throw new SftpPathNotFoundException(spnfe.Message, spnfe.InnerException);
-            }
-            catch (ObjectDisposedException ode)
-            {
-                throw new ObjectDisposedException(ode.ObjectName, ode.InnerException);
-            }
-        }
-
-        private void Disconnect()
-        {
-            if (_client != null && _client.IsConnected)
-                _client.Disconnect();
-        }
-
-        #endregion
-
-        #region Public Methods
 
         public void DownloadFromSftp()
         {
@@ -210,6 +161,55 @@ namespace SftpWrapper.Sdk.Services
         }
 
         #endregion
+
+        
+        #region Private Methods
+
+        private string ValidPath(string sourcePath, ref string destinationPath)
+        {
+            var files = _client.ListDirectory(sourcePath).Where(f => !f.Name.StartsWith(".")).ToList();
+            if (!files.Any()) throw new SftpPathNotFoundException("File not found.");
+            if (!_client.Exists(Path.Combine(sourcePath, files.First().Name)))
+                throw new SftpPathNotFoundException("File not found.");
+            destinationPath = Path.Combine(destinationPath, files.First().Name);
+            return Path.Combine(sourcePath, files.First().Name);
+
+        }
+
+        private void DeleteSourceFolder(SftpFileInfo file)
+        {
+            if (!DownloadSuccess) return;
+            if (!_client.Exists(file.SourcePath)) return;
+            try
+            {
+                _client.Delete(file.SourcePath);
+            }
+            catch (ArgumentNullException ane)
+            {
+                throw new ArgumentNullException(ane.ParamName, ane.InnerException);
+            }
+            catch (SshConnectionException sce)
+            {
+                throw new SshConnectionException(sce.Message, sce.DisconnectReason, sce.InnerException);
+            }
+            catch (SftpPathNotFoundException spnfe)
+            {
+                throw new SftpPathNotFoundException(spnfe.Message, spnfe.InnerException);
+            }
+            catch (ObjectDisposedException ode)
+            {
+                throw new ObjectDisposedException(ode.ObjectName, ode.InnerException);
+            }
+        }
+
+        private void Disconnect()
+        {
+            if (_client != null && _client.IsConnected)
+                _client.Disconnect();
+        }
+
+        #endregion
+
 
         #region IDisposable Members
 
