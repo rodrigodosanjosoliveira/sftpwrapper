@@ -173,7 +173,9 @@ namespace SftpWrapper.Sdk.Services
         {
             try
             {
-                var files = _client.ListDirectory(File.SourcePath);
+                var directory = Path.GetDirectoryName(File.SourcePath);
+                directory = directory.Replace("\\", "/") + "/";
+                var files = _client.ListDirectory(directory);
                 var sftpFiles = files.ToList();
                 var l = sftpFiles.FirstOrDefault(sf => !sf.Name.StartsWith("."));
 
