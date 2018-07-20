@@ -28,7 +28,7 @@ namespace SftpWrapper.Tests
         {
             var operation = new Download(_connection, SourcePath, _destinationPath);
             operation.DownloadFromSftp();
-            Assert.True(operation.DownloadSuccess);
+            Assert.True(operation.DownloadSuccess(_destinationPath));
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace SftpWrapper.Tests
 
             var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
             operation.DownloadManyFromSftp();
-            Assert.True(operation.DownloadSuccess);
+            Assert.True(operation.DownloadSuccess(_destinationPath));
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace SftpWrapper.Tests
         {
             var download = new Download(_connection) {File = new SftpFileInfo("/upload/teste.html",_destinationPath)};
             download.DownloadFromSftp();
-            Assert.True(download.DownloadSuccess);
+            Assert.True(download.DownloadSuccess(_destinationPath));
         }
     }
 }

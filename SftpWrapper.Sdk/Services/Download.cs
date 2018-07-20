@@ -12,7 +12,6 @@ namespace SftpWrapper.Sdk.Services
     public class Download : IDisposable
     {
         private readonly SftpClient _client;
-        public bool DownloadSuccess { get; set; }
         public SftpFileInfo File { get; set; }
         public List<SftpFileInfo> Files { get; set; }
 
@@ -59,8 +58,8 @@ namespace SftpWrapper.Sdk.Services
                 {
                     _client.DownloadFile(File.SourcePath, fs);
                 }
-                DownloadSuccess = System.IO.File.Exists($"{File.DestinationPath}");
-                if (DownloadSuccess)
+                 
+                if (DownloadSuccess(File.DestinationPath))
                     DeleteSourceFolder(File);
             }
             catch (InvalidOperationException ioe)
@@ -95,8 +94,7 @@ namespace SftpWrapper.Sdk.Services
                         _client.DownloadFile(file.SourcePath, fs);
                     }
 
-                    DownloadSuccess = System.IO.File.Exists($"{file.DestinationPath}");
-                    if (DownloadSuccess)
+                    if (DownloadSuccess(file.DestinationPath))
                         DeleteSourceFolder(file);
                 }
 
@@ -175,7 +173,6 @@ namespace SftpWrapper.Sdk.Services
 
         private void DeleteSourceFolder(SftpFileInfo file)
         {
-            if (!DownloadSuccess) return;
             if (!_client.Exists(file.SourcePath)) return;
             try
             {
@@ -204,6 +201,8 @@ namespace SftpWrapper.Sdk.Services
             if (_client != null && _client.IsConnected)
                 _client.Disconnect();
         }
+
+        public bool DownloadSuccess(string path) => System.IO.File.Exists($"{path}") && new System.IO.FileInfo(path).Length > 0;
 
         #endregion
 
