@@ -15,12 +15,11 @@ namespace SftpWrapper.Tests
         private const string Password = "pass";
         private const string SourcePath = "/upload/";
         private readonly string _destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
-        private const int Port = 2222;
         private readonly ConnectionInfo _connection;
 
         public DownloadFromSftpTests()
         {
-            _connection = new ConnectionInfo(User, Password, Host, Port);
+            _connection = new ConnectionInfo(User, Password, Host);
         }
 
         [Fact]
@@ -34,15 +33,15 @@ namespace SftpWrapper.Tests
         [Fact]
         public void DownloadWithExtensionTest()
         {
-            var validExtensions = new List<string> {".rem", ".ret"};
+            var validExtensions = new List<string> { ".rem", ".ret" };
 
             var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
             operation.DownloadManyFromSftp();
-            Assert.True(operation.DownloadSuccess(_destinationPath));
+            Assert.True(operation.DownloadSuccess(_destinationPath + "//teste.ret"));
         }
 
         [Fact]
-        public void DownloadWithExtensionNoValidFilesTest()
+        public void DownloadWithExtensionInValidFilesTest()
         {
             var validExtensions = new List<string> { ".rem", ".ret" };
 
@@ -65,7 +64,8 @@ namespace SftpWrapper.Tests
             var download = new Download(_connection, SourcePath, _destinationPath);
             var file = download.GetFileName();
             Assert.NotNull(file);
-            Assert.Equal("teste.html", file);
+            Assert.True(File.Exists(_destinationPath));
+            Assert.True(new FileInfo(_destinationPath).Length > 0);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace SftpWrapper.Tests
         [Fact]
         public void UsingOtherConstructorTest()
         {
-            var download = new Download(_connection) {File = new SftpFileInfo("/upload/teste.html",_destinationPath)};
+            var download = new Download(_connection) { File = new SftpFileInfo("/upload/teste.ret", _destinationPath) };
             download.DownloadFromSftp();
             Assert.True(download.DownloadSuccess(_destinationPath));
         }
