@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Sockets;
 using Renci.SshNet;
 using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 using SftpWrapper.Sdk.Models;
 
 namespace SftpWrapper.Sdk.Services
