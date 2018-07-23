@@ -46,7 +46,7 @@ namespace SftpWrapper.Sdk.Services
 
             foreach (var filePath in filePaths)
             {
-                Files.Add(new SftpFileInfo(filePath, Path.Combine(destinationPath, Path.GetFileName(filePath))));
+                Files.Add(new SftpFileInfo(filePath, Path.Combine(destinationPath, Path.GetFileName(filePath) ?? throw new InvalidOperationException())));
             }
         }
 
@@ -96,6 +96,10 @@ namespace SftpWrapper.Sdk.Services
 
                     if (DownloadSuccess(file.DestinationPath))
                         DeleteSourceFolder(file);
+                    else
+                    {
+                        System.IO.File.Delete(file.DestinationPath);
+                    }
                 }
 
             }
@@ -126,7 +130,7 @@ namespace SftpWrapper.Sdk.Services
             try
             {
                 var directory = Path.GetDirectoryName(File.SourcePath);
-                directory = directory.Replace("\\", "/") + "/";
+                directory = directory?.Replace("\\", "/") + "/";
                 var files = _client.ListDirectory(directory);
                 var sftpFiles = files.ToList();
                 var l = sftpFiles.FirstOrDefault(sf => !sf.Name.StartsWith("."));
@@ -202,7 +206,7 @@ namespace SftpWrapper.Sdk.Services
                 _client.Disconnect();
         }
 
-        public bool DownloadSuccess(string path) => System.IO.File.Exists($"{path}") && new System.IO.FileInfo(path).Length > 0;
+        public bool DownloadSuccess(string path) => System.IO.File.Exists($"{path}") && new FileInfo(path).Length > 0;
 
         #endregion
 
