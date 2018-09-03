@@ -167,10 +167,14 @@ namespace SftpWrapper.Sdk.Services
         private string ValidPath(string sourcePath, ref string destinationPath)
         {
             var files = _client.ListDirectory(sourcePath).Where(f => !f.Name.StartsWith(".")).ToList();
+            
             if (!files.Any()) throw new SftpPathNotFoundException("File not found.");
+            
             if (!_client.Exists(Path.Combine(sourcePath, files.First().Name)))
                 throw new SftpPathNotFoundException("File not found.");
+            
             destinationPath = Path.Combine(destinationPath, files.First().Name);
+            
             return Path.Combine(sourcePath, files.First().Name);
 
         }
@@ -178,6 +182,7 @@ namespace SftpWrapper.Sdk.Services
         private void DeleteSourceFolder(SftpFileInfo file)
         {
             if (!_client.Exists(file.SourcePath)) return;
+            
             try
             {
                 _client.Delete(file.SourcePath);
