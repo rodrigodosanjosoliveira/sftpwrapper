@@ -7,12 +7,15 @@ https://www.nuget.org/packages/SftpWrapper.Sdk/
 
 ## Utilizando o nuget
 
-Configurar o Visual Studio para adicionar a origem desse nuget:
+Package Manager:
 ```
-Tools-> NuGet Package Manager -> Package Manager Settings -> Package Sources
+Install-Package SftpWrapper.Sdk -Version 1.0.6
+```
+.NET CLI
+```
+dotnet add package SftpWrapper.Sdk --version 1.0.6
+```
 
-Install-Package SftpWrapper.Sdk
-```
 ## Executando os testes 
 
 Deve-se executar o comando abaixo para iniciar o servidor SFTP a partir da imagem Docker.
