@@ -15,6 +15,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "dfonseca",
+      "name": "Duarte",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/143609?v=4",
+      "profile": "https://github.com/dfonseca",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
