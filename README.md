@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/rodrigodosanjosoliveira/sftpwrapper.svg?branch=master)](https://travis-ci.org/rodrigodosanjosoliveira/sftpwrapper)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 
@@ -46,6 +46,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/JCelento"><img src="https://avatars0.githubusercontent.com/u/22276748?v=4" width="100px;" alt=""/><br /><sub><b>Jamile Celento</b></sub></a><br /><a href="#infra-JCelento" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/rodrigodosanjosoliveira/sftpwrapper/commits?author=JCelento" title="Tests">⚠️</a> <a href="https://github.com/rodrigodosanjosoliveira/sftpwrapper/commits?author=JCelento" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/rodrigodosanjosoliveira"><img src="https://avatars3.githubusercontent.com/u/657657?v=4" width="100px;" alt=""/><br /><sub><b>Rodrigo Oliveira</b></sub></a><br /><a href="#infra-rodrigodosanjosoliveira" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/rodrigodosanjosoliveira/sftpwrapper/commits?author=rodrigodosanjosoliveira" title="Tests">⚠️</a> <a href="https://github.com/rodrigodosanjosoliveira/sftpwrapper/commits?author=rodrigodosanjosoliveira" title="Code">💻</a></td>
   </tr>
 </table>
 

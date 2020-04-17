@@ -15,6 +15,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "rodrigodosanjosoliveira",
+      "name": "Rodrigo Oliveira",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/657657?v=4",
+      "profile": "https://github.com/rodrigodosanjosoliveira",
+      "contributions": [
+        "infra",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
