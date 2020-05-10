@@ -1,3 +1,5 @@
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/rodrigodosanjosoliveira/sftpwrapper) 
+
 [![Build Status](https://travis-ci.org/rodrigodosanjosoliveira/sftpwrapper.svg?branch=master)](https://travis-ci.org/rodrigodosanjosoliveira/sftpwrapper)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
