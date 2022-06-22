@@ -19,7 +19,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-
+    - name: Instalação de dependências
+      run: dotnet restore
     - name: Geração do package
       run: |
         # ls ${{github.workspace}}
