@@ -23,7 +23,7 @@ jobs:
     - name: Geração do package
       run: |
         # ls ${{github.workspace}}
-        dotnet pack
+        dotnet pack ${{CAMINHO_PROJETO}} --no-restore -o out
 
     - name: Push no NuGet
       run: |
