@@ -1,4 +1,4 @@
-name: .NET
+name: SftpWrapper
 
 on:
   push:
@@ -7,19 +7,23 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  pack-push:
+    env:
+      CAMINHO_PROJETO: ./sftpwrapper/SftpWrapper.Sdk/SftpWrapper.Sdk.csproj
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+    - uses: actions/checkout@v2
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+        dotnet-version: 5.0.101
+
+    - name: Geração do package
+      run: dotnet pack ${{ env.CAMINHO_PROJETO }} -c Release -o out
+
+    - name: Push no NuGet
+      run: |
+        cd out
+        dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
