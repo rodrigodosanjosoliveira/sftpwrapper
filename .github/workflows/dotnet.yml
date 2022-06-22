@@ -22,8 +22,8 @@ jobs:
 
     - name: Geração do package
       run: |
-        ls ${{github.workspace}}
-        dotnet pack ${{ env.CAMINHO_PROJETO }}
+        # ls ${{github.workspace}}
+        dotnet pack
 
     - name: Push no NuGet
       run: |
