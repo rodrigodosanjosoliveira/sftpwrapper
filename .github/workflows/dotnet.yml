@@ -9,7 +9,7 @@ on:
 jobs:
   pack-push:
     env:
-      CAMINHO_PROJETO: sftpwrapper/SftpWrapper.Sdk/SftpWrapper.Sdk.csproj
+      CAMINHO_PROJETO: SftpWrapper.Sdk/SftpWrapper.Sdk.csproj
 
     runs-on: ubuntu-latest
 
@@ -23,7 +23,7 @@ jobs:
     - name: Geração do package
       run: |
         ls ${{github.workspace}}
-        dotnet pack ${{ env.CAMINHO_PROJETO }} -o out
+        dotnet pack ${{ env.CAMINHO_PROJETO }}
 
     - name: Push no NuGet
       run: |
