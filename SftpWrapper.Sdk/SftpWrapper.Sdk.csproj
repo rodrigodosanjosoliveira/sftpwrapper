@@ -1,16 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-<PropertyGroup>
-  <TargetFramework>net5.0</TargetFramework>
-  <PackageId>SftpWrapper.Sdk</PackageId>
-  <Version>2.0.1</Version>
-  <Authors>Rodrigo Oliveira</Authors>
-  <Company>RA TECNOLOGIA</Company>
-  <PackageTags>NuGet;.NET 5;Classlib;GitHub;Actions</PackageTags>
-  <Description>
-    Biblioteca para utilização do SFTP do pacote SSH.NET
-  </Description>
-</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Rodrigo Oliveira</Authors>
+    <Company>RA Tecnologia</Company>
+    <Product>SftpWrapper</Product>
+    <Description>Biblioteca para utilização do SFTP do pacote SSH.NET</Description>
+    <PackageProjectUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</RepositoryUrl>
+    <NeutralLanguage></NeutralLanguage>
+    <Version>2.0.2</Version>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <FileVersion>1.0.0.6</FileVersion>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageLicenseUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageLicenseUrl>
+    <Copyright>Copyright © 2017 Rodrigo Oliveira</Copyright>
+    <PackageId>SftpWrapper.Sdk</PackageId>
+  </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Services\" />
