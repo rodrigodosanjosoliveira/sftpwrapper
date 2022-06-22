@@ -9,7 +9,7 @@ on:
 jobs:
   pack-push:
     env:
-      CAMINHO_PROJETO: SftpWrapper.Sdk/SftpWrapper.Sdk.csproj
+      CAMINHO_PROJETO: ./SftpWrapper.Sdk.csproj
 
     runs-on: ubuntu-latest
 
