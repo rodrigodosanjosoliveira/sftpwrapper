@@ -21,7 +21,7 @@ jobs:
         dotnet-version: 5.0.101
 
     - name: Geração do package
-      run: dotnet pack ${{ env.CAMINHO_PROJETO }} -c Release -o out
+      run: dotnet pack ${{ env.CAMINHO_PROJETO }} -o out
 
     - name: Push no NuGet
       run: |
