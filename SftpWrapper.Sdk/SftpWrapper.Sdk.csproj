@@ -1,28 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Rodrigo Oliveira</Authors>
     <Company>RA Tecnologia</Company>
     <Product>SftpWrapper</Product>
-    <Description>Biblioteca para utilização do SFTP do pacote SSH.NET</Description>
+    <Description>Biblioteca para utilização do SFTP do pacote SSH.NET com suporte moderno a async/await, injeção de dependência e autenticação por chaves.</Description>
     <PackageProjectUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</RepositoryUrl>
     <NeutralLanguage></NeutralLanguage>
-    <Version>2.0.2</Version>
-    <AssemblyVersion>1.0.0.6</AssemblyVersion>
-    <FileVersion>1.0.0.6</FileVersion>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageLicenseUrl>https://github.com/rodrigodosanjosoliveira/SftpWrapper</PackageLicenseUrl>
-    <Copyright>Copyright © 2017 Rodrigo Oliveira</Copyright>
+    <Version>2.1.0</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
+    <PackageReleaseNotes>Suporte a ISftpService com async/await, Streams, Injeção de Dependência, ILogger, autenticação por chave privada e mitigação contra perda de dados.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright © 2017-2026 Rodrigo Oliveira</Copyright>
     <PackageId>SftpWrapper.Sdk</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="SSH.NET" Version="2020.0.2" />
+    <PackageReference Include="SSH.NET" Version="2026.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
   </ItemGroup>
 </Project>

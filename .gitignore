@@ -46,3 +46,9 @@ Thumbs.db
 *.ide-shm
 
 *.ide-wal
+
+# NuGet package artifacts
+out/
+*.nupkg
+*.snupkg
+

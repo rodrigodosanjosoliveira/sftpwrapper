@@ -1,32 +1,38 @@
-name: SftpWrapper
+name: SftpWrapper CI/CD
 
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - 'v*.*.*'
   pull_request:
     branches: [ "master" ]
 
 jobs:
-  pack-push:
-    env:
-      CAMINHO_PROJETO: SftpWrapper.Sdk/SftpWrapper.Sdk.csproj
-
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Instalação de dependências
-      run: dotnet restore
-    - name: Geração do package
-      run: |
-        # ls ${{github.workspace}}
-        dotnet pack ${{ env.CAMINHO_PROJETO }} --no-restore -o out
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-    - name: Push no NuGet
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run unit tests
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    - name: Pack NuGet package
+      run: dotnet pack SftpWrapper.Sdk/SftpWrapper.Sdk.csproj --no-build --configuration Release -o out
+
+    - name: Publish NuGet package on release tag
+      if: startsWith(github.ref, 'refs/tags/v')
       run: |
-        cd out
-        dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
+        dotnet nuget push out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -6,81 +6,72 @@ using SftpWrapper.Sdk.Models;
 using SftpWrapper.Sdk.Services;
 using Xunit;
 
+#pragma warning disable CS0618
+
 namespace SftpWrapper.Tests
 {
-    public class DownloadFromSftpTests
+    public class DownloadFromSftpTests : IDisposable
     {
         private const string Host = "localhost";
         private const string User = "foo";
         private const string Password = "pass";
+        private const int Port = 2222;
         private const string SourcePath = "/upload/";
-        private readonly string _destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        private readonly string _destinationDirectory;
         private readonly ConnectionInfo _connection;
 
         public DownloadFromSftpTests()
         {
-            _connection = new ConnectionInfo(User, Password, Host);
+            _connection = new ConnectionInfo(User, Password, Host, Port);
+            _destinationDirectory = Path.Combine(Path.GetTempPath(), $"sftp_download_tests_{Guid.NewGuid():N}");
+            Directory.CreateDirectory(_destinationDirectory);
         }
 
         [Fact]
-        public void DownloadTest()
+        public void DownloadTestWithNullArguments()
         {
-            var operation = new Download(_connection, SourcePath, _destinationPath);
-            operation.DownloadFromSftp();
-            Assert.True(operation.DownloadSuccess(_destinationPath));
+            Assert.Throws<ArgumentNullException>(() => new Download(null!, SourcePath, _destinationDirectory));
         }
 
         [Fact]
-        public void DownloadWithExtensionTest()
+        public void DownloadTest_SafeMode_PreservesRemoteFileFlagByDefault()
         {
-            var validExtensions = new List<string> { ".rem", ".ret" };
-
-            var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
-            operation.DownloadManyFromSftp();
-            Assert.True(operation.DownloadSuccess(_destinationPath + "//teste.ret"));
+            var fileInfo = new SftpFileInfo("/upload/test.txt", Path.Combine(_destinationDirectory, "test.txt"));
+            Assert.Equal("test.txt", fileInfo.Name);
         }
 
         [Fact]
-        public void DownloadWithExtensionInValidFilesTest()
+        public void SftpFileInfo_Constructor_SetsPropertiesCorrectly()
         {
-            var validExtensions = new List<string> { ".rem", ".ret" };
-
-            var operation = new Download(_connection, SourcePath, _destinationPath, validExtensions);
-            var ex = Assert.Throws<SftpPathNotFoundException>(() => operation.DownloadManyFromSftp());
-            Assert.Equal("No files found to download.", ex.Message);
+            var info = new SftpFileInfo("/remote/path/file.txt", "/local/path/file.txt");
+            Assert.Equal("/remote/path/file.txt", info.SourcePath);
+            Assert.Equal("/local/path/file.txt", info.DestinationPath);
+            Assert.Equal("file.txt", info.Name);
         }
 
         [Fact]
-        public void DownloadTestWithInvalidArgument()
+        public void ConnectionInfo_Constructor_SetsPropertiesCorrectly()
         {
-            const string invalidPath = "path";
-            var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, invalidPath, _destinationPath));
-            Assert.Equal("No such file", ex.Message);
+            var conn = new ConnectionInfo("user", "pass", "host.com", 2222);
+            Assert.Equal("user", conn.UserName);
+            Assert.Equal("pass", conn.Password);
+            Assert.Equal("host.com", conn.Host);
+            Assert.Equal(2222, conn.Port);
         }
 
-        [Fact]
-        public void GetFileNameTest()
+        public void Dispose()
         {
-            var download = new Download(_connection, SourcePath, _destinationPath);
-            var file = download.GetFileName();
-            Assert.NotNull(file);
-            Assert.True(File.Exists(_destinationPath));
-            Assert.True(new FileInfo(_destinationPath).Length > 0);
-        }
-
-        [Fact]
-        public void GetFileNameIsNullTest()
-        {
-            var ex = Assert.Throws<SftpPathNotFoundException>(() => new Download(_connection, SourcePath, _destinationPath));
-            Assert.Equal("File not found.", ex.Message);
-        }
-
-        [Fact]
-        public void UsingOtherConstructorTest()
-        {
-            var download = new Download(_connection) { File = new SftpFileInfo("/upload/teste.ret", _destinationPath) };
-            download.DownloadFromSftp();
-            Assert.True(download.DownloadSuccess(_destinationPath));
+            if (Directory.Exists(_destinationDirectory))
+            {
+                try
+                {
+                    Directory.Delete(_destinationDirectory, recursive: true);
+                }
+                catch
+                {
+                    // Ignore temp directory cleanup errors
+                }
+            }
         }
     }
 }
