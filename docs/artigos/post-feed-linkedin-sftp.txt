@@ -1,0 +1,29 @@
+"Em plena era de microsserviços, mensageria e nuvem, por que o bom e velho SFTP ainda é a espinha dorsal de tantas integrações bancárias e corporativas?"
+
+Quem desenvolve no ecossistema .NET corporativo — especialmente em bancos, fintechs, saúde e ERPs — sabe que a resposta é simples: arquivos CNAB, lotes de faturamento, conciliações financeiras e dados sensíveis de parceiros ainda trafegam diariamente via SFTP.
+
+O problema? A maioria das implementações em C# espalhadas pela internet ainda segue práticas de 10 anos atrás:
+❌ I/O 100% síncrono que causa Thread Pool Starvation em APIs ASP.NET Core sob carga.
+❌ Classes concretas instanciadas na regra de negócio, tornando impossível criar mocks para testes unitários.
+❌ Gravação desnecessária de arquivos temporários em disco.
+❌ Falta de reconexão automática e retries, quebrando jobs noturnos no primeiro soluço de rede.
+❌ Armadilhas de exclusão silenciosa de arquivos originais.
+
+Para resolver essas dores e modernizar esse fluxo crítico, acabo de lançar a versão 2.1.0 da biblioteca open-source SftpWrapper.Sdk para .NET 8 e .NET Standard 2.0! 🚀
+
+O que mudou na biblioteca:
+🔹 Arquitetura 100% Assíncrona: suporte nativo a async/await, CancellationToken e Stream (zero arquivos em disco).
+🔹 Testabilidade Total: abstração limpa através da interface ISftpService, permitindo mocks fáceis com Moq ou NSubstitute.
+🔹 Injeção de Dependência Nativa: configure tudo em uma única linha no Program.cs com builder.Services.AddSftpService(...).
+🔹 Resiliência Embutida: reconexão lazy e retries com exponential backoff para instabilidades de rede.
+🔹 Autenticação Moderna: suporte a senha, arquivos de chave privada e chaves em texto/base64 injetadas diretamente do Azure Key Vault ou AWS Secrets Manager.
+🔹 Segurança de Supply Chain: pipeline de CI/CD no GitHub Actions migrada para o NuGet Trusted Publishing com autenticação OpenID Connect (OIDC) — sem nenhuma chave de API estática armazenada.
+
+Artigo técnico completo com exemplos de código, testes unitários e boas práticas nos links abaixo! 👇
+
+📦 Pacote no NuGet: https://www.nuget.org/packages/SftpWrapper.Sdk/
+💻 Código-fonte no GitHub: https://github.com/rodrigodosanjosoliveira/sftpwrapper
+
+Como o seu time lida com integrações SFTP legadas em aplicações modernas? Compartilhe nos comentários!
+
+#DotNet #CSharp #SoftwareEngineering #Architecture #SFTP #DevOps #Cloud #CleanCode #OpenSource #AsyncAwait #Security

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Integrando SFTP em .NET de Forma Moderna: Resiliência, Injeção de Dependência e Zero Arquivos em Disco</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 820px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 2.1em; line-height: 1.25; margin-bottom: 8px; color: #0a66c2; }
+  h2 { font-size: 1.5em; margin-top: 36px; margin-bottom: 12px; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; }
+  h3 { font-size: 1.2em; margin-top: 24px; margin-bottom: 8px; }
+  p { margin: 14px 0; }
+  blockquote {
+    border-left: 4px solid #0a66c2;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background: #f3f6f8;
+    font-style: italic;
+  }
+  pre {
+    background: #f4f4f5;
+    border: 1px solid #e4e4e7;
+    border-radius: 6px;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
+  }
+  code {
+    background: #f1f2f4;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+  }
+  th, td {
+    border: 1px solid #dcdfe4;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f7f9fa;
+    font-weight: 600;
+  }
+  ul, ol {
+    padding-left: 24px;
+    margin: 14px 0;
+  }
+  li {
+    margin-bottom: 6px;
+  }
+  a {
+    color: #0a66c2;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 30px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Integrando SFTP em .NET de Forma Moderna: Resiliência, Injeção de Dependência e Zero Arquivos em Disco</h1>
+
+<p>Quem trabalha no desenvolvimento de software corporativo — especialmente em setores como financeiro, saúde, logística ou varejo — certamente já se deparou com este cenário: em plena era de microsserviços, mensageria e nuvem, a integração crítica com um parceiro externo, banco ou ERP legado ainda é feita através de... <strong>SFTP</strong>.</p>
+
+<p>Arquivos de conciliação bancária (CNAB), faturamentos de ERPs (SAP, Totvs), prontuários e lotes de pedidos continuam trafegando diariamente via SFTP.</p>
+
+<p>No entanto, a grande maioria dos artigos e tutoriais de C# disponíveis na internet aborda o protocolo SFTP como fazíamos há 10 anos: código síncrono, classes concretas instanciadas sem injeção de dependência, ausência de testes unitários com mocks e falta de resiliência a quedas de rede.</p>
+
+<p>Neste artigo, vamos analisar os erros mais comuns nessa integração e demonstrar como implementar transferências SFTP modernas e seguras em <strong>.NET 8+</strong> utilizando a biblioteca open-source <strong><a href="https://www.nuget.org/packages/SftpWrapper.Sdk/">SftpWrapper.Sdk</a></strong>.</p>
+
+<hr>
+
+<h2>Os 4 Grandes Anti-Patterns do SFTP em C#</h2>
+
+<p>Antes de ver o código moderno, vale identificar os problemas que costumam derrubar aplicações em produção:</p>
+
+<h3>1. I/O de Rede Síncrono (Thread Pool Starvation)</h3>
+<p>Em aplicações como ASP.NET Core ou Worker Services de alto rendimento, invocar operações síncronas (<code>client.UploadFile(...)</code> ou <code>client.Connect()</code>) bloqueia threads do ThreadPool enquanto aguarda pacotes trafegarem pela rede. Sob carga, todas as threads disponíveis ficam bloqueadas esperando sockets, e a API para de responder requisições HTTP triviais.</p>
+
+<h3>2. Classes Concretas sem Interfaces (Testabilidade Inexistente)</h3>
+<p>Muitos desenvolvedores instanciam <code>new SftpClient(...)</code> diretamente na regra de negócio. O resultado? Não é possível escrever um único teste unitário com mocks (usando Moq, NSubstitute ou FakeItEasy) para validar a regra sem ter um servidor SFTP real de pé.</p>
+
+<h3>3. Escrita Desnecessária no Disco Local</h3>
+<p>Criar arquivos temporários em disco (<code>Path.GetTempFileName()</code>) para baixar ou enviar dados é ineficiente em containers Docker/Kubernetes e arriscado para dados sensíveis (LGPD/GDPR). O ideal é transferir diretamente via <code>Stream</code> em memória.</p>
+
+<h3>4. Instabilidades de Rede e Quedas de Conexão</h3>
+<p>Conexões SSH/SFTP são suscetíveis a timeouts de firewall, resets de TCP e latência. Sem um mecanismo que trate falhas transitórias com reconexão automática e retry, jobs noturnos falham silenciosamente.</p>
+
+<hr>
+
+<h2>A Solução: Arquitetura com SftpWrapper.Sdk</h2>
+
+<p>Para resolver essas dores com uma abordagem idiomática ao ecossistema .NET moderno, a biblioteca <strong>SftpWrapper.Sdk</strong> foi evoluída para oferecer:</p>
+
+<ul>
+  <li>Contrato desacoplado e mockável via <strong><code>ISftpService</code></strong>.</li>
+  <li>Suporte nativo a <strong><code>Stream</code></strong> e arquivos locais com <strong><code>async/await</code></strong> e <strong><code>CancellationToken</code></strong>.</li>
+  <li>Extensão oficial para <strong>Injeção de Dependência</strong> (<code>AddSftpService</code>).</li>
+  <li><strong>Resiliência nativa</strong>: reconexão lazy e retries com exponential backoff.</li>
+  <li>Autenticação via <strong>Senha</strong>, <strong>Chave Privada (.pem)</strong> ou chaves injetadas em memória direto do Azure Key Vault / AWS Secrets Manager.</li>
+  <li><strong>Prevenção contra perda de dados</strong>: por padrão, arquivos de origem nunca são apagados involuntariamente.</li>
+</ul>
+
+<hr>
+
+<h2>Mão na Massa: Exemplo Prático em .NET 8</h2>
+
+<h3>1. Instalação do Pacote</h3>
+
+<pre><code>dotnet add package SftpWrapper.Sdk --version 2.1.0</code></pre>
+
+<h3>2. Configurando no Program.cs</h3>
+
+<p>Em uma Web API ou Worker Service, configure a injeção de dependência de forma limpa:</p>
+
+<pre><code>using SftpWrapper.Sdk.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Registro do SftpWrapper com opções fortemente tipadas
+builder.Services.AddSftpService(options =>
+{
+    options.Host = builder.Configuration["Sftp:Host"] ?? "sftp.parceiro.com.br";
+    options.Port = builder.Configuration.GetValue("Sftp:Port", 22);
+    options.UserName = builder.Configuration["Sftp:UserName"] ?? "integracao_empresa";
+    
+    // Opção A: Autenticação por Senha
+    options.Password = builder.Configuration["Sftp:Password"];
+
+    // Opção B: Autenticação por Chave Privada (Recomendado para produção)
+    // options.PrivateKeyContent = builder.Configuration["Sftp:PrivateKeyRaw"];
+    // options.PrivateKeyPassphrase = builder.Configuration["Sftp:Passphrase"];
+
+    // Configurações de Resiliência
+    options.MaxRetryAttempts = 3;
+    options.RetryDelay = TimeSpan.FromSeconds(2);
+});
+
+var app = builder.Build();</code></pre>
+
+<h3>3. Consumindo no Serviço de Negócio com Streams (Zero Disco)</h3>
+
+<p>Imagine um cenário onde um relatório de conciliação bancária é gerado e precisa ser enviado diretamente para o SFTP sem salvar nada no disco local:</p>
+
+<pre><code>using System.Text;
+using SftpWrapper.Sdk.Abstractions;
+using SftpWrapper.Sdk.Models;
+
+public class ConciliacaoService
+{
+    private readonly ISftpService _sftpService;
+    private readonly ILogger&lt;ConciliacaoService&gt; _logger;
+
+    public ConciliacaoService(ISftpService sftpService, ILogger&lt;ConciliacaoService&gt; logger)
+    {
+        _sftpService = sftpService;
+        _logger = logger;
+    }
+
+    public async Task ProcessarRemessaAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Gerando dados da remessa...");
+
+        // 1. Gera o conteúdo em memória (ex: CSV ou arquivo posicional CNAB)
+        var conteudoCsv = "Id;Cliente;Valor\n1;Empresa Alpha;15000.00\n2;Beta S/A;8250.50";
+        var bytes = Encoding.UTF8.GetBytes(conteudoCsv);
+
+        using var memoryStream = new MemoryStream(bytes);
+
+        // 2. Upload direto da Stream para o SFTP (sem tocar no disco)
+        var nomeArquivoRemoto = $"/remessas/remessa_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+        
+        await _sftpService.UploadStreamAsync(
+            memoryStream, 
+            nomeArquivoRemoto, 
+            overwrite: true, 
+            cancellationToken: cancellationToken);
+
+        _logger.LogInformation("Remessa {Arquivo} enviada com sucesso ao SFTP!", nomeArquivoRemoto);
+
+        // 3. Listagem de arquivos de retorno disponíveis
+        var arquivosRetorno = await _sftpService.ListFilesAsync(
+            "/retornos", 
+            extensionFilter: ".ret", 
+            cancellationToken: cancellationToken);
+
+        foreach (var item in arquivosRetorno)
+        {
+            _logger.LogInformation("Arquivo de retorno encontrado: {Nome} ({Tamanho} bytes)", item.Name, item.Length);
+
+            // 4. Download direto para stream para processamento
+            using var downloadStream = new MemoryStream();
+            await _sftpService.DownloadStreamAsync(item.FullName, downloadStream, cancellationToken);
+            
+            // Processa o lote em memória...
+        }
+    }
+}</code></pre>
+
+<h3>4. Como Escrever Testes Unitários com Mocks</h3>
+
+<p>Graças à interface <code>ISftpService</code>, testar a regra de negócio acima agora é trivial e não requer conexão com a internet ou containers:</p>
+
+<pre><code>using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
+using SftpWrapper.Sdk.Abstractions;
+using Xunit;
+
+public class ConciliacaoServiceTests
+{
+    [Fact]
+    public async Task ProcessarRemessa_DeveInvocarUploadStreamComSucesso()
+    {
+        // Arrange
+        var mockSftp = new Mock&lt;ISftpService&gt;();
+        var logger = NullLogger&lt;ConciliacaoService&gt;.Instance;
+
+        mockSftp
+            .Setup(s => s.UploadStreamAsync(
+                It.IsAny&lt;Stream&gt;(), 
+                It.Is&lt;string&gt;(path => path.StartsWith("/remessas/remessa_")), 
+                true, 
+                It.IsAny&lt;CancellationToken&gt;()))
+            .Returns(Task.CompletedTask);
+
+        var service = new ConciliacaoService(mockSftp.Object, logger);
+
+        // Act
+        await service.ProcessarRemessaAsync(CancellationToken.None);
+
+        // Assert
+        mockSftp.Verify(s => s.UploadStreamAsync(
+            It.IsAny&lt;Stream&gt;(), 
+            It.IsAny&lt;string&gt;(), 
+            true, 
+            It.IsAny&lt;CancellationToken&gt;()), Times.Once);
+    }
+}</code></pre>
+
+<hr>
+
+<h2>Um Toque a Mais de Segurança: Trusted Publishing no NuGet</h2>
+
+<p>Além da modernização de código, a biblioteca adota as diretrizes recomendadas pela Microsoft e OpenSSF para segurança de supply chain: a publicação no NuGet utiliza <strong>Trusted Publishing com OpenID Connect (OIDC)</strong> via GitHub Actions.</p>
+
+<p>Isso significa que nenhum segredo estático (como tokens de API de longa duração) fica armazenado nos repositórios, reduzindo a zero a chance de vazamento de credenciais na esteira de CI/CD.</p>
+
+<hr>
+
+<h2>Conclusão</h2>
+
+<p>Protocolos estabelecidos como o SFTP não precisam significar código legado. Ao adotar interfaces adequadas, operações assíncronas, streams em memória e resiliência com exponential backoff, você garante que sua aplicação continue estável, testável e pronta para rodar em qualquer ambiente de nuvem moderno.</p>
+
+<ul>
+  <li><strong>Pacote no NuGet</strong>: <a href="https://www.nuget.org/packages/SftpWrapper.Sdk/">SftpWrapper.Sdk 2.1.0</a></li>
+  <li><strong>Código-Fonte no GitHub</strong>: <a href="https://github.com/rodrigodosanjosoliveira/sftpwrapper">rodrigodosanjosoliveira/sftpwrapper</a></li>
+</ul>
+
+</body>
+</html>
